@@ -3,9 +3,13 @@ package com.datcute.hello_spring_boot.controller;
 import com.datcute.hello_spring_boot.dto.request.UserRequestDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import org.springframework.http.converter.json.GsonBuilderUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
@@ -52,7 +56,5 @@ public class  UserController {
                 new UserRequestDTO("Nguyen Van B", "0123456789", "email", "Nguyen Van B")
         );
     }
-
-
 
 }

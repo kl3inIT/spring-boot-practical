@@ -1,6 +1,6 @@
 package com.datcute.hello_spring_boot.dto.request;
 
-import com.datcute.hello_spring_boot.util.PhoneNumber;
+import com.datcute.hello_spring_boot.util.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,11 +23,26 @@ public class UserRequestDTO implements Serializable {
     @Email(message = "Email should be valid")
     private String email;
 
-    public UserRequestDTO(String firstName, String phone, String email, String lastName) {
+    //@Pattern(regexp = "^(ACTIVE|INACTIVE|NONE)$", message = "Status must be ACTIVE, INACTIVE or NONE")
+    @EnumPattern(name = "status", regexp = "^(ACTIVE|INACTIVE|NONE)$")
+    private UserStatus status;
+
+    @EnumValue(name = "types", enumClass = UserTypes.class)
+    private String types;
+
+    public String getTypes() {
+        return types;
+    }
+
+    public UserStatus getStatus() {
+        return status;
+    }
+
+    public UserRequestDTO(String firstName, String lastName, String email, String phone) {
         this.firstName = firstName;
-        this.phone = phone;
-        this.email = email;
         this.lastName = lastName;
+        this.email = email;
+        this.phone = phone;
     }
 
     public String getFirstName() {
