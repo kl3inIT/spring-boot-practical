@@ -1,0 +1,14 @@
+package com.datcute.hello_spring_boot.exception;
+
+public class ResourceNotFoundException extends RuntimeException {
+    public ResourceNotFoundException() {
+    }
+
+    public ResourceNotFoundException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public ResourceNotFoundException(String message) {
+        super(message);
+    }
+}

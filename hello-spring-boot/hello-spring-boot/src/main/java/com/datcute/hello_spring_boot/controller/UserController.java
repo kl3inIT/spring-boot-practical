@@ -2,12 +2,17 @@ package com.datcute.hello_spring_boot.controller;
 
 import com.datcute.hello_spring_boot.dto.request.UserRequestDTO;
 import com.datcute.hello_spring_boot.dto.response.ResponseData;
+import com.datcute.hello_spring_boot.dto.response.ResponseError;
 import com.datcute.hello_spring_boot.dto.response.ResponseSuccess;
+import com.datcute.hello_spring_boot.exception.ResourceNotFoundException;
+import com.datcute.hello_spring_boot.service.UserService;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -21,6 +26,12 @@ import java.util.List;
 @RequestMapping("/user")
 @Validated
 public class UserController {
+
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
 //    @Operation(summary = "summary", description = "description", responses = {
 //            @ApiResponse(responseCode = "201", description = "User added successfully",
@@ -40,27 +51,34 @@ public class UserController {
     //@ResponseStatus(HttpStatus.CREATED)
     public ResponseData<Integer> addUser(@Valid @RequestBody UserRequestDTO userDTO) {
         System.out.println("Request add user " + userDTO.getFirstName());
-        return new ResponseData<>(HttpStatus.CREATED.value(), "User added successfully", 1);
+
+        try {
+            userService.addUser(userDTO);
+            return new ResponseData<>(HttpStatus.CREATED.value(), "User added successfully", 1);
+
+        } catch (ResourceNotFoundException e) {
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
     }
 
-    @Operation(summary = "summary", description = "description", responses = {
-            @ApiResponse(responseCode = "202", description = "User updated successfully",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            examples = @ExampleObject(name = "ex name", summary = "ex summary",
-                                    value = """
-                                            {
-                                                "status": 202,
-                                                "message": "User updated successfully",
-                                                "data": null
-                                            }
-                                            """))
-            )
-    })
+//    @Operation(summary = "summary", description = "description", responses = {
+//            @ApiResponse(responseCode = "202", description = "User updated successfully",
+//                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+//                            examples = @ExampleObject(name = "ex name", summary = "ex summary",
+//                                    value = """
+//                                            {
+//                                                "status": 202,
+//                                                "message": "User updated successfully",
+//                                                "data": null
+//                                            }
+//                                            """))
+//            )
+//    })
     @PutMapping("/{userId}")
     //@ResponseStatus(HttpStatus.ACCEPTED)
-    public ResponseSuccess updateUser(@PathVariable int userId, @Valid @RequestBody UserRequestDTO userDTO) {
+    public ResponseData<Integer> updateUser(@Min(1) @PathVariable int userId, @Valid @RequestBody UserRequestDTO userDTO) {
         System.out.println("RequestBody update userId = " + userId);
-        return new ResponseSuccess(HttpStatus.ACCEPTED, "User updated successfully");
+        return new ResponseData<>(HttpStatus.ACCEPTED.value(), "User updated successfully");
     }
 
     @PatchMapping("/{userId}")
@@ -88,7 +106,7 @@ public class UserController {
     //@ResponseStatus(HttpStatus.OK)
     public ResponseSuccess getAllUsers(
             @RequestParam(defaultValue = "0") int pageNo,
-            @RequestParam(defaultValue = "10") int pageSize) {
+            @Max(10) @RequestParam(defaultValue = "10") int pageSize) {
         System.out.println("Request get all users");
         return new ResponseSuccess(HttpStatus.OK, "users", List.of(
                 new UserRequestDTO("Nguyen Van A", "0123456789", "email", "Nguyen Van A"),
