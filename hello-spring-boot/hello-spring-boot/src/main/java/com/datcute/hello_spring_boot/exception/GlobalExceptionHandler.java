@@ -1,6 +1,7 @@
 package com.datcute.hello_spring_boot.exception;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -16,7 +17,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({MethodArgumentNotValidException.class, ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidationException(Exception ex, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleValidationException(Exception ex, WebRequest request) {
         System.out.println("=================> handleValidationException");
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setTimestamp(new Date());
@@ -35,7 +36,7 @@ public class GlobalExceptionHandler {
         }
 
         errorResponse.setMessage(message);
-        return errorResponse;
+        return ResponseEntity.badRequest().body(errorResponse);
     }
 
     @ExceptionHandler({MethodArgumentTypeMismatchException.class})
