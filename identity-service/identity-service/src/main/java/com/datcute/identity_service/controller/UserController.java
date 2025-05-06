@@ -2,9 +2,12 @@ package com.datcute.identity_service.controller;
 
 import com.datcute.identity_service.dto.request.UserCreationRequest;
 import com.datcute.identity_service.dto.request.UserUpdateRequest;
+import com.datcute.identity_service.dto.response.ApiResponse;
 import com.datcute.identity_service.entity.User;
 import com.datcute.identity_service.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,8 +24,13 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody UserCreationRequest request) {
-        return userService.createUser(request);
+    ResponseEntity<ApiResponse<User> createUser(@RequestBody @Valid UserCreationRequest request) {
+        ApiResponse<User> response = new ApiResponse<>();
+
+        response.setResult(userService.createUser(request));
+        response.setMessage("User created successfully");
+        response.setCode(200);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping

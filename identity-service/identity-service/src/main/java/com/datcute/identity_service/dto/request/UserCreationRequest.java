@@ -1,10 +1,14 @@
 package com.datcute.identity_service.dto.request;
 
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDate;
 
 public class UserCreationRequest {
 
     private String username;
+
+    @Size(min =8, message = "Password must be at least 8 characters long")
     private String password;
     private String firstName;
     private String lastName;
